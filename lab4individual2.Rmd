@@ -1,0 +1,49 @@
+---
+title: "lab4"
+author: "Carter Meseck"
+date: "3/19/2021"
+output: html_document
+---
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyr)
+defense <- read_excel('C:/Users/kungf/downloads/cyclonesFootball2020.xlsx', sheet='Defensive')
+str(defense)
+
+offense <- read_excel('C:/Users/kungf/downloads/cyclonesFootball2020.xlsx', sheet='Offensive')
+str(offense)
+
+biography <- read_excel('C:/Users/kungf/downloads/cyclonesFootball2020.xlsx', sheet='Biography')
+str(biography)
+```
+
+```{r}
+defClean <- defense
+offClean <- offense
+bioClean <- biography
+
+defClean$Name <- as.factor(defClean$Name)
+defClean$Opponent_Opponent <- as.factor(defClean$Opponent_Opponent)
+
+offClean$Name <- as.factor(offClean$Name)
+offClean$Opponent_Opponent <- as.factor(offClean$Opponent_Opponent)
+
+bioClean$Name <- as.factor(bioClean$Name)
+# 1. Player names and opponent names are factors - Converted names and opponent names into factors
+
+
+defClean <- defClean %>% mutate(across(where(is.character),as.numeric))
+
+offClean <- offClean %>% mutate(across(where(is.character),as.numeric))
+
+bioClean$Weight <- bioClean$Weight %>% as.numeric()
+
+# 2. All offensive and defense are numerical, weight is also numeric - Mutated across character columns because they are all statistics, and change them to numeric.
+
+bioClean %>% separate(Height, c('feet','inches'), sep = '-', convert= TRUE, remove = FALSE) %>% mutate(Height = 12*feet + inches) %>% select(-inches)
+## 3. Change height from biography to numeric - Separated height into two columns and converted to inches.
+
+```
+
