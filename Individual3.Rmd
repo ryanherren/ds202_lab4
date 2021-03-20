@@ -4,96 +4,57 @@ author: "Felix Baez-Santiago"
 date: "3/19/2021"
 output: html_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-```{r}
-library(readxl)
-library(dplyr)
-library(tidyr)
-defense <- read_excel('C:/Users/kungf/downloads/cyclonesFootball2020.xlsx', sheet='Defensive')
-str(defense)
-
-offense <- read_excel('C:/Users/kungf/downloads/cyclonesFootball2020.xlsx', sheet='Offensive')
-str(offense)
-
-biography <- read_excel('C:/Users/kungf/downloads/cyclonesFootball2020.xlsx', sheet='Biography')
-str(biography)
-```
-
-```{r}
-defClean <- defense
-offClean <- offense
-bioClean <- biography
-
-defClean$Name <- as.factor(defClean$Name)
-defClean$Opponent_Opponent <- as.factor(defClean$Opponent_Opponent)
-
-offClean$Name <- as.factor(offClean$Name)
-offClean$Opponent_Opponent <- as.factor(offClean$Opponent_Opponent)
-
-bioClean$Name <- as.factor(bioClean$Name)
-# 1. Player names and opponent names are factors - Converted names and opponent names into factors
-
-
-defClean <- defClean %>% mutate(across(where(is.character),as.numeric))
-
-offClean <- offClean %>% mutate(across(where(is.character),as.numeric))
-
-bioClean$Weight <- bioClean$Weight %>% as.numeric()
-
-# 2. All offensive and defense are numerical, weight is also numeric - Mutated across character columns because they are all statistics, and change them to numeric.
-
-bioClean %>% separate(Height, c('feet','inches'), sep = '-', convert= TRUE, remove = FALSE) %>% mutate(Height = 12*feet + inches) %>% select(-inches)
-## 3. Change height from biography to numeric - Separated height into two columns and converted to inches.
-
-
-
 Part two: Tidying
+
 ```{r}
-defClean <- defense %>%
-  mutate(Name = as.factor(Name),
-         Opponent_Opponent = as.factor(Opponent_Opponent),
-         Tackles_Solo = as.numeric(Tackles_Solo),
-         Tackles_ASST = as.numeric(Tackles_ASST),
-         Tackles_TFL = as.numeric(Tackles_TFL),
-         Tackles_Sack = as.numeric(Tackles_Sack),
-         Turnover_FF = as.numeric(Turnover_FF),
-         Turnover_FR = as.numeric(Turnover_FR),
-         Turnover_INT = as.numeric(Turnover_INT),
-         Pass_QBH = as.numeric(Pass_QBH),
-         Pass_PB = as.numeric(Pass_PB))
-str(defClean)
+offClean2 <- offClean %>%
+  pivot_longer(Rushing_ATT:Passing_INT, names_to = 'stat')
+str(offClean2)
 ```
 
 ```{r}
-offClean <- offense %>%
-  mutate(Name = as.factor(Name),
-         Opponent_Opponent = as.factor(Opponent_Opponent),
-         Rushing_ATT = as.numeric(Rushing_ATT),
-         Rushing_YDS = as.numeric(Rushing_YDS),
-         Rushing_TD = as.numeric(Rushing_TD),
-         Receiving_REC = as.numeric(Receiving_REC),
-         Receiving_YDS = as.numeric(Receiving_YDS),
-         Receiving_TD = as.numeric(Receiving_TD),
-         `Passing_CMP-ATT` = as.numeric(`Passing_CMP-ATT`),
-         Passing_YDS = as.numeric(Passing_YDS),
-         Passing_TD = as.numeric(Passing_TD),
-         Passing_INT = as.numeric(Passing_INT))
-str(offClean)
+ggplot(offClean2, aes(x = stat, y = value)) + geom_bar(stat = 'identity')
+```
+
+The passing yards and rushing yards have a significantly higher value than any other category.
+
+
+```{r}
+OK <- offClean %>%
+  filter(Opponent_Opponent=='Oklahoma') %>%
+  ggplot(aes(x=Name, y=Receiving_YDS)) + geom_point() + theme(axis.text.x = element_text(angle=90))
+OK
+OR <- offClean %>%
+  filter(Opponent_Opponent=='Oregon') %>%
+  ggplot(aes(x=Name, y=Receiving_YDS)) + geom_point() + theme(axis.text.x = element_text(angle=90))
+OR
+```
+I think that Iowa did better against Oklahoma offensively than they did against Oregon because there are significantly more receiving yards per player in the Oklahoma game than there are in the Oregon one.
+
+
+```{r}
+bioClean2 <- bioClean %>%
+  separate(Hometown, c('City', 'State', sep = ','))
+States <- full_join(pivot_wider(offClean, Name), pivot_wider(defClean, Name))
+States2 <- select(bioClean2, c(Name, State))
+States <- left_join(States, States2, by = 'Name')
+summary(factor(States$State))
 ```
 
 ```{r}
-bioClean <- biography %>%
-  separate(Height, c('Feet', 'Inches'), '-', convert=TRUE) %>%
-  mutate(Name = as.factor(Name),
-         Position = as.factor(Position),
-         Feet = as.numeric(Feet),
-         Inches = as.numeric(Inches),
-         Weight = as.numeric(Weight),
-         Class = as.factor(Class),
-         Hometown = as.factor(Hometown),
-         Highschool = as.factor(Highschool))
-str(bioClean)
+BrockP <- full_join(x = offClean, y = defClean)
+BrockP2 <- BrockP %>%
+  filter(Name == 'Purdy, Brock')
+Team <- BrockP %>%
+  filter(Name != 'Purdy, Brock')
+ggplot(BrockP, aes(x = Opponent_Opponent, y = Rushing_TD)) + geom_bar(stat = 'identity')
+ggplot(Team, aes(x = Opponent_Opponent, y = Rushing_TD)) + geom_bar(stat = 'identity')
+```
+
+Overall, Brock has more rushing touchdowns than the rest of the team on average
+
+
+```{r}
+def2019 <- read_excel('C:/Users/visma/Desktop/DS202/ds202_lab4/cyclonesFootball2019.xlsx', sheet='Defensive')
+off2019 <- read_excel('C:/Users/visma/Desktop/DS202/ds202_lab4/cyclonesFootball2019.xlsx', sheet='Offensive')
 ```
