@@ -158,8 +158,61 @@ defState %>%
 ```
 
 
-## 3.2 and 3.3
+## 3.2
 ```{r}
+defense <- defense %>%
+  mutate(Tackles_Solo = as.numeric(Tackles_Solo)) %>% na.omit
+defense <- defense %>%
+  mutate(Tackles_ASST = as.numeric(Tackles_ASST)) %>% na.omit
+defense <- defense %>%
+  mutate(Tackles_TFL = as.numeric(Tackles_TFL)) %>% na.omit
+defense <- defense %>%
+  mutate(Tackles_Sack = as.numeric(Tackles_Sack)) %>% na.omit
+defense <- defense %>%
+  mutate(Turnover_FF = as.numeric(Turnover_FF)) %>% na.omit
+defense <- defense %>%
+  mutate(Turnover_FR = as.numeric(Turnover_FR)) %>% na.omit
+defense <- defense %>%
+  mutate(Turnover_INT = as.numeric(Turnover_INT)) %>% na.omit
+defense <- defense %>%
+  mutate(Pass_QBH = as.numeric(Pass_QBH)) %>% na.omit
+defense <- defense %>%
+  mutate(Pass_PB = as.numeric(Pass_PB)) %>% na.omit
+```
+ 
+```{r} 
+offense <- offense %>%
+  mutate(Receiving_REC = as.numeric(Receiving_REC)) 
+offense <- offense %>%
+  mutate(Receiving_YDS = as.numeric(Receiving_YDS)) 
+offense <- offense %>%
+  mutate(Receiving_TD = as.numeric(Receiving_TD))
+offense <- offense %>%
+  mutate(Rushing_ATT = as.numeric(Rushing_YDS))
+offense <- offense %>%
+  mutate(Rushing_YDS = as.numeric(Rushing_YDS))
+offense <- offense %>%
+  mutate(Rushing_TD = as.numeric(Rushing_TD))
+offense <- offense %>%
+  mutate('Passing_CMP-ATT' = as.numeric('Passing_CMP-ATT'))
+offense <- offense %>%
+  mutate(Passing_YDS = as.numeric(Passing_YDS))
+offense <- offense %>%
+  mutate(Passing_TD = as.numeric(Passing_TD))
+offense <- offense %>%
+  mutate(Passing_INT = as.numeric(Passing_INT))
+```
+
+```{r}
+do <- inner_join(defense, offense, by = "Name")
+brock <- do %>%
+  filter(Name == 'Purdy, Brock')
+mean(brock$Passing_YDS) 
+mean(do$Passing_YDS, na.rm=TRUE)
+```
+The average performance of Brock Purdy is higher than the rest of the team.
+
+## 3.3
 ```{r}
 defense2019 <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
 offense2019 <- read_excel('cyclonesFootball2019.xlsx', sheet='Offensive')
@@ -189,6 +242,7 @@ defSummary20 <- defClean %>%
 offClean19 <- offClean19 %>%
                 group_by(Name) %>%
                 summarize(totalReceivingTD = sum(Receiving_TD), totalRushingTD = sum(Rushing_TD), meanReceivingTD = mean(Receiving_TD), meanRushingTD = mean(Rushing_TD))
+
 head(offClean19)
 offCleanTemp <- offClean20 %>%
                 group_by(Name) %>%
