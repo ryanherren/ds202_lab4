@@ -47,10 +47,11 @@ bioClean$Weight <- bioClean$Weight %>% as.numeric()
 
 bioClean %>% separate(Height, c('feet','inches'), sep = '-', convert= TRUE, remove = FALSE) %>% mutate(Height = 12*feet + inches) %>% select(-inches)
 ## 3. Change height from biography to numeric - Separated height into two columns and converted to inches.
-
+```
 
 
 Part two: Tidying
+
 ```{r}
 defClean <- defense %>%
   mutate(Name = as.factor(Name),
@@ -65,7 +66,7 @@ defClean <- defense %>%
          Pass_QBH = as.numeric(Pass_QBH),
          Pass_PB = as.numeric(Pass_PB))
 str(defClean)
-```
+``` 
 
 ```{r}
 offClean <- offense %>%

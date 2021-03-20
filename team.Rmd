@@ -1,6 +1,6 @@
 ---
 title: "lab4"
-author: "Ryan Herren"
+author: "Ryan Herren, Carter Meseck"
 date: "3/19/2021"
 output: html_document
 ---
@@ -163,3 +163,4 @@ defState %>%
 ```{r}
 
 ```
+
