@@ -1,6 +1,6 @@
 ---
 title: "lab4"
-author: "Ryan Herren, Carter Meseck"
+author: "Ryan Herren, Carter Meseck, Felix Baez"
 date: "3/19/2021"
 output: html_document
 ---
@@ -13,14 +13,18 @@ library(readxl)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-defense <- read_excel('/Users/ryanherren/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx', sheet='Defensive')
+defense <- read_excel('./cyclonesFootball2020.xlsx', sheet='Defensive')
 str(defense)
 
-offense <- read_excel('/Users/ryanherren/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx', sheet='Offensive')
+offense <- read_excel('./cyclonesFootball2020.xlsx', sheet='Offensive')
 str(offense)
 
-biography <- read_excel('/Users/ryanherren/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx', sheet='Biography')
+biography <- read_excel('./cyclonesFootball2020.xlsx', sheet='Biography')
 str(biography)
+
+defense2019 <- read_excel('./cyclonesFootball2019.xlsx', sheet='Defensive')
+offense2019 <- read_excel('./cyclonesFootball2019.xlsx', sheet='Offensive')
+bio2019 <- read_excel('./cyclonesFootball2019.xlsx', sheet='Biography')
 ```
 ## 1.1
 ```{r}
@@ -154,13 +158,42 @@ defState %>%
 ```
 
 
-## 3.2
+## 3.2 and 3.3
 ```{r}
-
+```{r}
+defense2019 <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
+offense2019 <- read_excel('cyclonesFootball2019.xlsx', sheet='Offensive')
+bio2019 <- read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
+defense2020 <- read_excel('cyclonesFootball2020.xlsx', sheet='Defensive')
+offense2020 <- read_excel('cyclonesFootball2020.xlsx', sheet='Offensive')
+bio2020 <- read_excel('cyclonesFootball2020.xlsx', sheet='Biography')
 ```
 
-## 3.3
 ```{r}
-
+deffClean19 <- defense2019 %>%
+            mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+offClean19 <- offense2019 %>%
+            mutate(across(Rushing_ATT:Passing_INT, as.numeric))
+deffClean20 <- defense2020 %>%
+            mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+offClean20 <- offense2020 %>%
+            mutate(across(Receiving_REC:Passing_INT, as.numeric))
+defSummary <- deffClean19 %>%
+                group_by(Name) %>%
+                mutate(Tackles_Total = Tackles_Solo + Tackles_ASST) %>%
+                summarize(Total_Tackles=sum(Tackles_Total), )
+defSummary20 <- defClean %>%
+                group_by(Name) %>%
+                mutate(Tackles_Total = Tackles_Solo + Tackles_ASST) %>%
+                summarize(Total_Tackles=sum(Tackles_Total), )
+offClean19 <- offClean19 %>%
+                group_by(Name) %>%
+                summarize(totalReceivingTD = sum(Receiving_TD), totalRushingTD = sum(Rushing_TD), meanReceivingTD = mean(Receiving_TD), meanRushingTD = mean(Rushing_TD))
+head(offClean19)
+offCleanTemp <- offClean20 %>%
+                group_by(Name) %>%
+                summarize(totalReceivingTD = sum(Receiving_TD), totalRushingTD = sum(Rushing_TD), meanReceivingTD = mean(Receiving_TD), meanRushingTD = mean(Rushing_TD))
+head(offCleanTemp)
 ```
+According to this numerical summary we know that Landen Akers is the player who improved the most.
 
