@@ -18,6 +18,7 @@ ggplot(offClean2, aes(x = stat, y = value)) + geom_bar(stat = 'identity')
 
 The passing yards and rushing yards have a significantly higher value than any other category.
 
+<<<<<<< HEAD
 
 ```{r}
 OK <- offClean %>%
@@ -40,6 +41,30 @@ States2 <- select(bioClean2, c(Name, State))
 States <- left_join(States, States2, by = 'Name')
 summary(factor(States$State))
 ```
+=======
+bioClean %>% separate(Height, c('feet','inches'), sep = '-', convert= TRUE, remove = FALSE) %>% mutate(Height = 12*feet + inches) %>% select(-inches)
+## 3. Change height from biography to numeric - Separated height into two columns and converted to inches.
+```
+
+
+Part two: Tidying
+
+```{r}
+defClean <- defense %>%
+  mutate(Name = as.factor(Name),
+         Opponent_Opponent = as.factor(Opponent_Opponent),
+         Tackles_Solo = as.numeric(Tackles_Solo),
+         Tackles_ASST = as.numeric(Tackles_ASST),
+         Tackles_TFL = as.numeric(Tackles_TFL),
+         Tackles_Sack = as.numeric(Tackles_Sack),
+         Turnover_FF = as.numeric(Turnover_FF),
+         Turnover_FR = as.numeric(Turnover_FR),
+         Turnover_INT = as.numeric(Turnover_INT),
+         Pass_QBH = as.numeric(Pass_QBH),
+         Pass_PB = as.numeric(Pass_PB))
+str(defClean)
+``` 
+>>>>>>> 2d36788a3a94f7a7c74aa9b108a7e6a6eb5027ca
 
 ```{r}
 BrockP <- full_join(x = offClean, y = defClean)
